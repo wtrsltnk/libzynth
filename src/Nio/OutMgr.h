@@ -2,6 +2,7 @@
 #define OUTMGR_H
 
 #include "../Misc/Stereo.h"
+#include "../Nio/IMixer.h"
 #include <list>
 #include <string>
 #include <semaphore.h>
@@ -35,15 +36,17 @@ class OutMgr
         std::string getDriver() const;
 
         bool setSink(std::string name);
-
         std::string getSink() const;
+
+        void SetMixer(IMixer* mixer) { this->mixer = mixer; }
+        IMixer* GetMixer() { return this->mixer; }
 
         class WavEngine * wave;     /**<The Wave Recorder*/
         friend class EngineMgr;
     private:
         OutMgr();
         void addSmps(float *l, float *r);
-        unsigned int  storedSmps() const {return priBuffCurrent.l - priBuf.l; }
+        unsigned int  storedSmps() const {return unsigned int(priBuffCurrent.l - priBuf.l); }
         void removeStaleSmps();
 
         AudioOut *currentOut; /**<The current output driver*/
@@ -56,7 +59,7 @@ class OutMgr
 
         float *outl;
         float *outr;
-        class Master & master;
+        IMixer *mixer;
 
         int stales;
 };

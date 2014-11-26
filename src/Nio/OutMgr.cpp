@@ -7,7 +7,6 @@
 #include "EngineMgr.h"
 #include "InMgr.h"
 #include "WavEngine.h"
-#include "../Misc/Master.h"
 #include "../Misc/Util.h" //for set_realtime()
 
 using namespace std;
@@ -22,11 +21,10 @@ OutMgr::OutMgr()
     :wave(new WavEngine()),
       priBuf(new float[4096],
              new float[4096]), priBuffCurrent(priBuf),
-      master(Master::getInstance())
+      mixer(NULL)
 {
     currentOut = NULL;
     stales     = 0;
-    master     = Master::getInstance();
 
     //init samples
     outr = new float[synth->buffersize];
@@ -57,18 +55,21 @@ OutMgr::~OutMgr()
  */
 const Stereo<float *> OutMgr::tick(unsigned int frameSize)
 {
-    pthread_mutex_lock(&(master.mutex));
-    InMgr::getInstance().flush();
-    pthread_mutex_unlock(&(master.mutex));
-    //SysEv->execute();
-    removeStaleSmps();
-    while(frameSize > storedSmps()) {
-        pthread_mutex_lock(&(master.mutex));
-        master.AudioOut(outl, outr);
-        pthread_mutex_unlock(&(master.mutex));
-        addSmps(outl, outr);
+    if (this->mixer != NULL)
+    {
+        this->mixer->Lock();
+        InMgr::getInstance().flush();
+        this->mixer->UnLock();
+        //SysEv->execute();
+        removeStaleSmps();
+        while(frameSize > storedSmps()) {
+            this->mixer->Lock();
+            this->mixer->AudioOut(outl, outr);
+            this->mixer->UnLock();
+            addSmps(outl, outr);
+        }
+        stales = frameSize;
     }
-    stales = frameSize;
     return priBuf;
 }
 

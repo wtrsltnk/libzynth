@@ -25,11 +25,7 @@ if(ASOUND_LIBRARY)
 endif(ASOUND_LIBRARY)
 
 check_library_exists(asound snd_seq_create_simple_port "${ASOUND_LIBRARY_DIR}" HAVE_LIBASOUND2)
-if(HAVE_LIBASOUND2)
-    message(STATUS "Found ALSA: ${ASOUND_LIBRARY}")
-else(HAVE_LIBASOUND2)
-    message(STATUS "ALSA not found")
-endif(HAVE_LIBASOUND2)
+
 set(ALSA_FOUND ${HAVE_LIBASOUND2})
 
 find_path(ALSA_INCLUDES alsa/version.h)

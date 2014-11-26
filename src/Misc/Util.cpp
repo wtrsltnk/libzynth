@@ -24,7 +24,6 @@
 #include <vector>
 #include <cassert>
 #include <math.h>
-#include <stdio.h>
 #ifndef WIN32
 #include <err.h>
 #include <unistd.h>

@@ -37,37 +37,20 @@ class Config
         ~Config();
         struct {
             int   SampleRate, SoundBufferSize, OscilSize, SwapStereo;
-            int   WindowsWaveOutId, WindowsMidiInId;
-            int   BankUIAutoClose;
-            int   DumpNotesToFile, DumpAppend;
-            int   GzipCompression;
             int   Interpolation;
-            std::string DumpFile;
             std::string bankRootDirList[MAX_BANK_ROOT_DIRS], currentBankDir;
             std::string presetsDirList[MAX_BANK_ROOT_DIRS];
             int CheckPADsynth;
-            int IgnoreProgramChange;
-            int UserInterfaceMode;
-            int VirKeybLayout;
-            std::string LinuxALSAaudioDev;
-            std::string nameTag;
         } cfg;
-        int winwavemax, winmidimax; //number of wave/midi devices on Windows
-        int maxstringsize;
 
-        struct winmidionedevice {
-            char *name;
-        };
-        winmidionedevice *winmididevices;
-
-        void clearbankrootdirlist();
-        void clearpresetsdirlist();
-        void init();
-        void save();
+        void ClearBankRootDirList();
+        void ClearPresetsDirList();
+        void Init();
+        void Save();
 
     private:
-        void readConfig(const char *filename);
-        void saveConfig(const char *filename);
-        std::string getConfigFileName();
+        void ReadConfig(const std::string& filename);
+        void SaveConfig(const std::string& filename);
+        std::string GetConfigFileName();
 };
 #endif

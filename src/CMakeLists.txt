@@ -93,22 +93,81 @@ add_subdirectory(Synth)
 add_subdirectory(Effects)
 add_subdirectory(Params)
 add_subdirectory(DSP)
+add_subdirectory(Nio)
+
+set(DEFAULT_IN "NULL")
+set(DEFAULT_OUT "NULL")
+
+find_package(Alsa)
+find_package(JACK)
+find_package(PORTAUDIO)
+
+set(AlsaEnable ${ALSA_FOUND} CACHE BOOL
+    "Enable support for Advanced Linux Sound Architecture")
+set(JackEnable ${JACK_FOUND} CACHE BOOL
+    "Enable support for JACK Audio Connection toolKit")
+set(PaEnable ${PORTAUDIO_FOUND} CACHE BOOL
+    "Enable support for Port Audio System")
+set(LashEnable ${LASH_FOUND} CACHE BOOL
+    "Enable LASH Audio Session Handler")
+
+if(AlsaEnable)
+    list(APPEND nio_LIBRARIES ${ASOUND_LIBRARY})
+    list(APPEND nio_LIBRARY_DIRS ${ASOUND_LIBRARY_DIRS})
+    list(APPEND libzynth_nio_SRCS Nio/AlsaEngine.cpp)
+    add_definitions(-DALSA=1)
+    message(STATUS "Compiling with alsa")
+endif(AlsaEnable)
+
+if(JackEnable)
+    include_directories(${JACK_INCLUDE_DIR})
+    list(APPEND nio_LIBRARIES ${JACK_LIBRARIES})
+    list(APPEND nio_LIBRARY_DIRS ${JACK_LIBRARY_DIRS})
+    list(APPEND libzynth_nio_SRCS Nio/JackEngine.cpp)
+    add_definitions(-DJACK=1)
+    message(STATUS "Compiling with jack")
+endif(JackEnable)
+
+if(PaEnable)
+    include_directories(${PORTAUDIO_INCLUDE_DIR})
+    list(APPEND nio_LIBRARIES ${PORTAUDIO_LIBRARIES})
+    list(APPEND nio_LIBRARY_DIRS ${PORTAUDIO_LIBRARY_DIRS})
+    list(APPEND libzynth_nio_SRCS Nio/PaEngine.cpp)
+    add_definitions(-DPORTAUDIO=1)
+    set(DEFAULT_IN "NULL")
+    set(DEFAULT_OUT "PA")
+    message(STATUS "Compiling with portaudio")
+endif(PaEnable)
+
+if(LashEnable)
+    include_directories(${LASH_INCLUDE_DIRS})
+    list(APPEND nio_LIBRARIES ${LASH_LIBRARIES})
+    list(APPEND nio_LIBRARY_DIRS ${LASH_LIBRARY_DIRS})
+    add_definitions(-DLASH=1)
+    message(STATUS "Compiling with lash")
+endif(LashEnable)
+
+add_definitions(-DIN_DEFAULT="${DEFAULT_IN}")
+add_definitions(-DOUT_DEFAULT="${DEFAULT_OUT}")
 
 add_library(libzynth STATIC
+    ${libzynth_nio_SRCS}
+    ${libzynth_misc_SRCS}
     ${libzynth_dsp_SRCS}
     ${libzynth_effect_SRCS}
-    ${libzynth_misc_SRCS}
     ${libzynth_params_SRCS}
     ${libzynth_synth_SRCS}
+    globals.h
     )
 
 target_link_libraries(libzynth
+    ${nio_LIBRARIES}
     ${FFTW_LIBRARIES}
     ${MXML_LIBRARIES}
     ${PTHREAD_LIBRARIES}
     ${OS_LIBRARIES}
     )
 
-add_subdirectory(Nio)
+
 ### END : Core libZynth code
 #####################################################################################

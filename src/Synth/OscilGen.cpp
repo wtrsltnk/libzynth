@@ -26,7 +26,6 @@
 #include <cassert>
 #include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
 
 
 //operations on FFTfreqs

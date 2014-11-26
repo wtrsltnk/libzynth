@@ -54,7 +54,7 @@ bool JackEngine::connectServer(string server)
         return true;
 
     string clientname = "zynaddsubfx";
-    string postfix    = Nio::getPostfix();
+    string postfix    = Nio::GetPostfix();
     if(!postfix.empty())
         clientname += "_" + postfix;
     jack_status_t jackstatus;
@@ -147,7 +147,7 @@ void JackEngine::setMidiEn(bool nval)
 
 bool JackEngine::getMidiEn() const
 {
-    return midi.inport;
+    return (midi.inport != NULL);
 }
 
 void JackEngine::setAudioEn(bool nval)
@@ -160,7 +160,7 @@ void JackEngine::setAudioEn(bool nval)
 
 bool JackEngine::getAudioEn() const
 {
-    return audio.ports[0];
+    return (audio.ports[0] != NULL);
 }
 
 bool JackEngine::openAudio()
@@ -241,7 +241,7 @@ bool JackEngine::openMidi()
     midi.inport = jack_port_register(jackClient, "midi_input",
                                      JACK_DEFAULT_MIDI_TYPE,
                                      JackPortIsInput | JackPortIsTerminal, 0);
-    return midi.inport;
+    return (midi.inport != NULL);
 }
 
 void JackEngine::stopMidi()

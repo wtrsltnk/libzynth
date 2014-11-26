@@ -21,7 +21,6 @@
 */
 
 #include <math.h>
-#include <stdio.h>
 #include "../globals.h"
 #include "LFOParams.h"
 

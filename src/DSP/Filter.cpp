@@ -21,7 +21,6 @@
 */
 
 #include <math.h>
-#include <stdio.h>
 
 #include "Filter.h"
 #include "AnalogFilter.h"

@@ -19,7 +19,9 @@
 #if PORTAUDIO
 #include "PaEngine.h"
 #endif
+#if RTMIDI
 #include "RtEngine.h"
+#endif
 
 using namespace std;
 
@@ -34,20 +36,28 @@ EngineMgr::EngineMgr()
     Engine *defaultEng = new NulEngine();
 
     //conditional compiling mess (but contained)
+    std::cout << "Adding Default engine" << std::endl;
     engines.push_back(defaultEng);
 #if OSS
+    std::cout << "Adding OSS engine" << std::endl;
     engines.push_back(new OssEngine());
 #endif
 #if ALSA
+    std::cout << "Adding Alsa engine" << std::endl;
     engines.push_back(new AlsaEngine());
 #endif
 #if JACK
+    std::cout << "Adding Jack engine" << std::endl;
     engines.push_back(new JackEngine());
 #endif
 #if PORTAUDIO
+    std::cout << "Adding Portaudio engine" << std::endl;
     engines.push_back(new PaEngine());
 #endif
+#if RTMIDI
+    std::cout << "Adding RtMidi engine" << std::endl;
     engines.push_back(new RtEngine());
+#endif
 
     defaultOut = dynamic_cast<AudioOut *>(defaultEng);
 

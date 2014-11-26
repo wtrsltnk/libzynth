@@ -19,7 +19,6 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 */
-#include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,48 +34,21 @@ using namespace std;
 
 Config::Config()
 {}
-void Config::init()
+void Config::Init()
 {
-    maxstringsize = MAX_STRING_SIZE; //for ui
     //defaults
     cfg.SampleRate      = 44100;
     cfg.SoundBufferSize = 256;
     cfg.OscilSize  = 1024;
     cfg.SwapStereo = 0;
 
-    cfg.DumpFile = "zynaddsubfx_dump.txt";
-
-    cfg.WindowsWaveOutId = 0;
-    cfg.WindowsMidiInId  = 0;
-
-    cfg.BankUIAutoClose = 0;
-    cfg.DumpNotesToFile = 0;
-    cfg.DumpAppend      = 1;
-
-    cfg.GzipCompression = 3;
-
     cfg.Interpolation = 0;
     cfg.CheckPADsynth = 1;
-    cfg.IgnoreProgramChange = 0;
-
-    cfg.UserInterfaceMode = 0;
-    cfg.VirKeybLayout     = 1;
-    winwavemax = 1;
-    winmidimax = 1;
-    //try to find out how many input midi devices are there
-    winmididevices = new winmidionedevice[winmidimax];
-    for(int i = 0; i < winmidimax; ++i) {
-        winmididevices[i].name = new char[MAX_STRING_SIZE];
-        for(int j = 0; j < MAX_STRING_SIZE; ++j)
-            winmididevices[i].name[j] = '\0';
-    }
-
 
 //get the midi input devices name
     cfg.currentBankDir = "./testbnk";
 
-    std::string filename = this->getConfigFileName();
-    readConfig(filename.c_str());
+    this->ReadConfig(this->GetConfigFileName());
 
     if(cfg.bankRootDirList[0].empty()) {
         //banks
@@ -96,42 +68,36 @@ void Config::init()
         cfg.presetsDirList[3] = "/usr/share/zynaddsubfx/presets";
         cfg.presetsDirList[4] = "/usr/local/share/zynaddsubfx/presets";
     }
-    cfg.LinuxALSAaudioDev = "default";
-    cfg.nameTag = "";
 }
 
 Config::~Config()
+{ }
+
+
+void Config::Save()
 {
-    for(int i = 0; i < winmidimax; ++i)
-        delete [] winmididevices[i].name;
-    delete [] winmididevices;
+    this->SaveConfig(this->GetConfigFileName());
 }
 
-
-void Config::save()
-{
-    std::string filename = this->getConfigFileName();
-    saveConfig(filename.c_str());
-}
-
-void Config::clearbankrootdirlist()
+void Config::ClearBankRootDirList()
 {
     for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
         cfg.bankRootDirList[i].clear();
 }
 
-void Config::clearpresetsdirlist()
+void Config::ClearPresetsDirList()
 {
     for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
         cfg.presetsDirList[i].clear();
 }
 
-void Config::readConfig(const char *filename)
+void Config::ReadConfig(const std::string& filename)
 {
     XMLwrapper xmlcfg;
     if(xmlcfg.loadXMLfile(filename) < 0)
         return;
-    if(xmlcfg.enterbranch("CONFIGURATION")) {
+    if(xmlcfg.enterbranch("CONFIGURATION"))
+    {
         cfg.SampleRate = xmlcfg.getpar("sample_rate",
                                        cfg.SampleRate,
                                        4000,
@@ -148,25 +114,6 @@ void Config::readConfig(const char *filename)
                                        cfg.SwapStereo,
                                        0,
                                        1);
-        cfg.BankUIAutoClose = xmlcfg.getpar("bank_window_auto_close",
-                                            cfg.BankUIAutoClose,
-                                            0,
-                                            1);
-
-        cfg.DumpNotesToFile = xmlcfg.getpar("dump_notes_to_file",
-                                            cfg.DumpNotesToFile,
-                                            0,
-                                            1);
-        cfg.DumpAppend = xmlcfg.getpar("dump_append",
-                                       cfg.DumpAppend,
-                                       0,
-                                       1);
-        cfg.DumpFile = xmlcfg.getparstr("dump_file", "");
-
-        cfg.GzipCompression = xmlcfg.getpar("gzip_compression",
-                                            cfg.GzipCompression,
-                                            0,
-                                            9);
 
         cfg.currentBankDir = xmlcfg.getparstr("bank_current", "");
         cfg.Interpolation  = xmlcfg.getpar("interpolation",
@@ -178,21 +125,6 @@ void Config::readConfig(const char *filename)
                                           cfg.CheckPADsynth,
                                           0,
                                           1);
-
-        cfg.IgnoreProgramChange = xmlcfg.getpar("ignore_program_change",
-                                          cfg.IgnoreProgramChange,
-                                          0,
-                                          1);
-
-
-        cfg.UserInterfaceMode = xmlcfg.getpar("user_interface_mode",
-                                              cfg.UserInterfaceMode,
-                                              0,
-                                              2);
-        cfg.VirKeybLayout = xmlcfg.getpar("virtual_keyboard_layout",
-                                          cfg.VirKeybLayout,
-                                          0,
-                                          10);
 
         //get bankroot dirs
         for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
@@ -208,23 +140,13 @@ void Config::readConfig(const char *filename)
                 xmlcfg.exitbranch();
             }
 
-        //windows stuff
-        cfg.WindowsWaveOutId = xmlcfg.getpar("windows_wave_out_id",
-                                             cfg.WindowsWaveOutId,
-                                             0,
-                                             winwavemax);
-        cfg.WindowsMidiInId = xmlcfg.getpar("windows_midi_in_id",
-                                            cfg.WindowsMidiInId,
-                                            0,
-                                            winmidimax);
-
         xmlcfg.exitbranch();
     }
 
     cfg.OscilSize = (int) powf(2, ceil(logf(cfg.OscilSize - 1.0f) / logf(2.0f)));
 }
 
-void Config::saveConfig(const char *filename)
+void Config::SaveConfig(const std::string& filename)
 {
     XMLwrapper *xmlcfg = new XMLwrapper();
 
@@ -234,21 +156,10 @@ void Config::saveConfig(const char *filename)
     xmlcfg->addpar("sound_buffer_size", cfg.SoundBufferSize);
     xmlcfg->addpar("oscil_size", cfg.OscilSize);
     xmlcfg->addpar("swap_stereo", cfg.SwapStereo);
-    xmlcfg->addpar("bank_window_auto_close", cfg.BankUIAutoClose);
-
-    xmlcfg->addpar("dump_notes_to_file", cfg.DumpNotesToFile);
-    xmlcfg->addpar("dump_append", cfg.DumpAppend);
-    xmlcfg->addparstr("dump_file", cfg.DumpFile);
-
-    xmlcfg->addpar("gzip_compression", cfg.GzipCompression);
 
     xmlcfg->addpar("check_pad_synth", cfg.CheckPADsynth);
-    xmlcfg->addpar("ignore_program_change", cfg.IgnoreProgramChange);
 
     xmlcfg->addparstr("bank_current", cfg.currentBankDir);
-
-    xmlcfg->addpar("user_interface_mode", cfg.UserInterfaceMode);
-    xmlcfg->addpar("virtual_keyboard_layout", cfg.VirKeybLayout);
 
 
     for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
@@ -267,21 +178,14 @@ void Config::saveConfig(const char *filename)
 
     xmlcfg->addpar("interpolation", cfg.Interpolation);
 
-    //windows stuff
-    xmlcfg->addpar("windows_wave_out_id", cfg.WindowsWaveOutId);
-    xmlcfg->addpar("windows_midi_in_id", cfg.WindowsMidiInId);
-
     xmlcfg->endbranch();
 
-    int tmp = cfg.GzipCompression;
-    cfg.GzipCompression = 0;
     xmlcfg->saveXMLfile(filename);
-    cfg.GzipCompression = tmp;
 
     delete (xmlcfg);
 }
 
-std::string Config::getConfigFileName()
+std::string Config::GetConfigFileName()
 {
 #ifdef WIN32
     char win[256] = { 0 };

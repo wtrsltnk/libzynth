@@ -22,7 +22,6 @@
 
 #include "Controller.h"
 #include <math.h>
-#include <stdio.h>
 
 Controller::Controller()
 {

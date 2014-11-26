@@ -20,8 +20,8 @@
 
 */
 
-#ifndef PART_H
-#define PART_H
+#ifndef _INSTRUMENT_H_
+#define _INSTRUMENT_H_
 
 #define MAX_INFO_TEXT_SIZE 1000
 
@@ -40,17 +40,17 @@ class SynthNote;
 class XMLWrapper;
 class FFTwrapper;
 
-/** Part implementation*/
-class Part
+/** Instrument implementation*/
+class Instrument
 {
     public:
         /**Constructor
          * @param microtonal_ Pointer to the microtonal object
          * @param fft_ Pointer to the FFTwrapper
          * @param mutex_ Pointer to the master pthread_mutex_t*/
-        Part(Microtonal *microtonal_, FFTwrapper *fft_, pthread_mutex_t *mutex_);
+        Instrument(Microtonal *microtonal_, FFTwrapper *fft_, pthread_mutex_t *mutex_);
         /**Destructor*/
-        ~Part();
+        ~Instrument();
 
         // Midi commands implemented
         void NoteOn(unsigned char note,
@@ -101,7 +101,7 @@ class Part
         } kit[NUM_KIT_ITEMS];
 
 
-        //Part parameters
+        //Instrument parameters
         void setkeylimit(unsigned char Pkeylimit);
         void setkititemstatus(int kititem, int Penabled_);
 
@@ -199,4 +199,4 @@ class Part
         FFTwrapper *fft;
 };
 
-#endif
+#endif // _INSTRUMENT_H_

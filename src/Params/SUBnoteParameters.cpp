@@ -22,7 +22,6 @@
 
 #include "../globals.h"
 #include "SUBnoteParameters.h"
-#include <stdio.h>
 
 SUBnoteParameters::SUBnoteParameters():Presets()
 {

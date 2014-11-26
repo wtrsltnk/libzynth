@@ -24,7 +24,6 @@
 #include "../Misc/Util.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 
 LFO::LFO(LFOParams *lfopars, float basefreq)

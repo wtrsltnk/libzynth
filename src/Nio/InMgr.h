@@ -4,6 +4,7 @@
 #include <string>
 #include <semaphore.h>
 #include "SafeQueue.h"
+#include "../Nio/IMixer.h"
 
 enum midi_type {
     M_NOTE = 1,
@@ -33,20 +34,22 @@ class InMgr
         /**Flush the Midi Queue*/
         void flush();
 
-        bool setSource(std::string name);
+        bool SetSource(std::string name);
+        std::string GetSource() const;
 
-        std::string getSource() const;
+        void SetMixer(IMixer* mixer) { this->mixer = mixer; }
+        IMixer* GetMixer() { return this->mixer; }
 
         friend class EngineMgr;
     private:
         InMgr();
-        class MidiIn *getIn(std::string name);
+        class MidiIn *GetIn(std::string name);
         SafeQueue<MidiEvent> queue;
         sem_t work;
         class MidiIn * current;
 
         /**the link to the rest of zyn*/
-        class Master & master;
+        IMixer *mixer;
 };
 
 #endif

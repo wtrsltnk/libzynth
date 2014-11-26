@@ -24,7 +24,6 @@
 
 #include "XMLwrapper.h"
 #include <cstring>
-#include <stdio.h>
 #include <stdlib.h>
 #include <cstdarg>
 #include <iostream>

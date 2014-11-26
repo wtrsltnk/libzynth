@@ -21,57 +21,59 @@ bool   Nio::autoConnect   = false;
 string Nio::defaultSource = IN_DEFAULT;
 string Nio::defaultSink   = OUT_DEFAULT;
 
-void Nio::init(void)
+Settings *synth;
+
+bool Nio::Start(IMixer* mixer, Settings *s)
 {
+    synth = s;
     in  = &InMgr::getInstance(); //Enable input wrapper
     out = &OutMgr::getInstance(); //Initialize the Output Systems
     eng = &EngineMgr::getInstance(); //Initialize The Engines
-}
 
-bool Nio::start()
-{
-    init();
+    in->SetMixer(mixer);
+    out->SetMixer(mixer);
+
     return eng->start();
 }
 
-void Nio::stop()
+void Nio::Stop()
 {
     eng->stop();
 }
 
-void Nio::setDefaultSource(string name)
+void Nio::SetDefaultSource(string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::toupper);
     defaultSource = name;
 }
 
-void Nio::setDefaultSink(string name)
+void Nio::SetDefaultSink(string name)
 {
     std::transform(name.begin(), name.end(), name.begin(), ::toupper);
     defaultSink = name;
 }
 
-bool Nio::setSource(string name)
+bool Nio::SetSource(string name)
 {
-    return in->setSource(name);
+    return in->SetSource(name);
 }
 
-bool Nio::setSink(string name)
+bool Nio::SetSink(string name)
 {
     return out->setSink(name);
 }
 
-void Nio::setPostfix(std::string post)
+void Nio::SetPostfix(std::string post)
 {
     postfix = post;
 }
 
-std::string Nio::getPostfix(void)
+std::string Nio::GetPostfix()
 {
     return postfix;
 }
 
-set<string> Nio::getSources(void)
+set<string> Nio::GetSources()
 {
     set<string> sources;
     for(std::list<Engine *>::iterator itr = eng->engines.begin();
@@ -81,7 +83,7 @@ set<string> Nio::getSources(void)
     return sources;
 }
 
-set<string> Nio::getSinks(void)
+set<string> Nio::GetSinks()
 {
     set<string> sinks;
     for(std::list<Engine *>::iterator itr = eng->engines.begin();
@@ -91,19 +93,19 @@ set<string> Nio::getSinks(void)
     return sinks;
 }
 
-string Nio::getSource()
+string Nio::GetSource()
 {
-    return in->getSource();
+    return in->GetSource();
 }
 
-string Nio::getSink()
+string Nio::GetSink()
 {
     return out->getSink();
 }
 
 #if JACK
 #include <jack/jack.h>
-void Nio::preferedSampleRate(unsigned &rate)
+void Nio::PreferedSampleRate(unsigned &rate)
 {
     jack_client_t *client = jack_client_open("temp-client",
                                              JackNoStartServer, 0);
@@ -113,26 +115,26 @@ void Nio::preferedSampleRate(unsigned &rate)
     }
 }
 #else
-void Nio::preferedSampleRate(unsigned &)
+void Nio::PreferedSampleRate(unsigned &)
 {}
 #endif
 
-void Nio::waveNew(class WavFile *wave)
+void Nio::WaveNew(class WavFile *wave)
 {
     out->wave->newFile(wave);
 }
 
-void Nio::waveStart(void)
+void Nio::WaveStart()
 {
     out->wave->Start();
 }
 
-void Nio::waveStop(void)
+void Nio::WaveStop()
 {
     out->wave->Stop();
 }
 
-void Nio::waveEnd(void)
+void Nio::WaveEnd()
 {
     out->wave->destroyFile();
 }

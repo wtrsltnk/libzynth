@@ -24,7 +24,6 @@
 
 #include "Bank.h"
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -44,7 +43,7 @@
 
 #include "Config.h"
 #include "Util.h"
-#include "Part.h"
+#include "Instrument.h"
 
 #define INSTRUMENT_EXTENSION ".xml"
 
@@ -145,7 +144,7 @@ void Bank::clearslot(unsigned int ninstrument)
 /*
  * Save the instrument to a slot
  */
-void Bank::savetoslot(unsigned int ninstrument, Part *part)
+void Bank::savetoslot(unsigned int ninstrument, Instrument *part)
 {
     clearslot(ninstrument);
 
@@ -162,7 +161,7 @@ void Bank::savetoslot(unsigned int ninstrument, Part *part)
 /*
  * Loads the instrument from the bank
  */
-void Bank::loadfromslot(unsigned int ninstrument, Part *part)
+void Bank::loadfromslot(unsigned int ninstrument, Instrument *part)
 {
     if(emptyslot(ninstrument))
         return;
@@ -220,7 +219,7 @@ int Bank::loadbank(string bankdirname)
         string name = filename;
 
         //remove the file extension
-        for(int i = name.size() - 1; i >= 2; i--)
+        for(int i = int(name.size()) - 1; i >= 2; i--)
             if(name[i] == '.') {
                 name = name.substr(0, i);
                 break;

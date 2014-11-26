@@ -1,13 +1,10 @@
 set(libzynth_misc_SRCS
     Misc/Bank.cpp
     Misc/Config.cpp
-    Misc/Dump.cpp
-    Misc/Master.cpp
     Misc/Microtonal.cpp
-    Misc/Part.cpp
+    Misc/Instrument.cpp
     Misc/Util.cpp
     Misc/XMLwrapper.cpp
-    Misc/Recorder.cpp
     Misc/WavFile.cpp
     Misc/WaveShapeSmps.cpp
     PARENT_SCOPE

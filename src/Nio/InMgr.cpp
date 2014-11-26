@@ -1,7 +1,6 @@
 #include "InMgr.h"
 #include "MidiIn.h"
 #include "EngineMgr.h"
-#include "../Misc/Master.h"
 #include <iostream>
 
 using namespace std;
@@ -41,7 +40,7 @@ InMgr &InMgr::getInstance()
 }
 
 InMgr::InMgr()
-    :queue(100), master(Master::getInstance())
+    :queue(100), mixer(NULL)
 {
     current = NULL;
     sem_init(&work, PTHREAD_PROCESS_PRIVATE, 0);
@@ -70,32 +69,29 @@ void InMgr::flush()
 
         switch(ev.type) {
             case M_NOTE:
-                dump.dumpnote(ev.channel, ev.num, ev.value);
-
                 if(ev.value)
-                    master.noteOn(ev.channel, ev.num, ev.value);
+                    this->mixer->NoteOn(ev.channel, ev.num, ev.value);
                 else
-                    master.noteOff(ev.channel, ev.num);
+                    this->mixer->NoteOff(ev.channel, ev.num);
                 break;
 
             case M_CONTROLLER:
-                dump.dumpcontroller(ev.channel, ev.num, ev.value);
-                master.setController(ev.channel, ev.num, ev.value);
+                this->mixer->SetController(ev.channel, ev.num, ev.value);
                 break;
 
             case M_PGMCHANGE:
-                master.setProgram(ev.channel, ev.num);
+                this->mixer->SetProgram(ev.channel, ev.num);
                 break;
             case M_PRESSURE:
-                master.polyphonicAftertouch(ev.channel, ev.num, ev.value);
+                this->mixer->PolyphonicAftertouch(ev.channel, ev.num, ev.value);
                 break;
         }
     }
 }
 
-bool InMgr::setSource(string name)
+bool InMgr::SetSource(string name)
 {
-    MidiIn *src = getIn(name);
+    MidiIn *src = GetIn(name);
 
     if(!src)
         return false;
@@ -109,12 +105,12 @@ bool InMgr::setSource(string name)
 
     //Keep system in a valid state (aka with a running driver)
     if(!success)
-        (current = getIn("NULL"))->setMidiEn(true);
+        (current = GetIn("NULL"))->setMidiEn(true);
 
     return success;
 }
 
-string InMgr::getSource() const
+string InMgr::GetSource() const
 {
     if(current)
         return current->name;
@@ -122,7 +118,7 @@ string InMgr::getSource() const
         return "ERROR";
 }
 
-MidiIn *InMgr::getIn(string name)
+MidiIn *InMgr::GetIn(string name)
 {
     EngineMgr &eng = EngineMgr::getInstance();
     return dynamic_cast<MidiIn *>(eng.getEng(name));
