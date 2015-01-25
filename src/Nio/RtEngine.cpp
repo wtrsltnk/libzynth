@@ -36,10 +36,17 @@ RtEngine::~RtEngine()
 bool RtEngine::Start()
 {
     this->midiin = new RtMidiIn();
-    this->midiin->setCallback(RtEngine::callback, this);
-    this->midiin->openPort(0);
+    if (this->midiin->getPortCount() > 0)
+    {
+        this->midiin->setCallback(RtEngine::callback, this);
+        this->midiin->openPort(0);
+        return true;
+    }
 
-    return true;
+    delete this->midiin;
+    this->midiin = 0;
+
+    return false;
 }
 
 void RtEngine::Stop()

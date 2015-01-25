@@ -7,7 +7,7 @@
 #include "EngineMgr.h"
 #include "InMgr.h"
 #include "WavEngine.h"
-#include "../Misc/Util.h" //for set_realtime()
+#include "../Misc/Util.h" //for interpolate()
 
 using namespace std;
 
@@ -20,8 +20,7 @@ OutMgr &OutMgr::getInstance()
 OutMgr::OutMgr()
     :wave(new WavEngine()),
       priBuf(new float[4096],
-             new float[4096]), priBuffCurrent(priBuf),
-      mixer(NULL)
+             new float[4096]), priBuffCurrent(priBuf)
 {
     currentOut = NULL;
     stales     = 0;
@@ -42,6 +41,16 @@ OutMgr::~OutMgr()
     delete [] outl;
 }
 
+void OutMgr::AddMixer(IMixer* mixer)
+{
+    this->mixers.insert(mixer);
+}
+
+void OutMgr::RemoveMixer(IMixer* mixer)
+{
+    this->mixers.erase(mixer);
+}
+
 /* Sequence of a tick
  * 1) lets see if we have any stuff to do via midi
  * 2) Lets do that stuff
@@ -55,21 +64,21 @@ OutMgr::~OutMgr()
  */
 const Stereo<float *> OutMgr::tick(unsigned int frameSize)
 {
-    if (this->mixer != NULL)
+    InMgr::getInstance().flush();
+
+    removeStaleSmps();
+    while (frameSize > storedSmps())
     {
-        this->mixer->Lock();
-        InMgr::getInstance().flush();
-        this->mixer->UnLock();
-        //SysEv->execute();
-        removeStaleSmps();
-        while(frameSize > storedSmps()) {
-            this->mixer->Lock();
-            this->mixer->AudioOut(outl, outr);
-            this->mixer->UnLock();
-            addSmps(outl, outr);
+        for (std::set<IMixer*>::iterator i = this->mixers.begin(); i != this->mixers.end(); ++i)
+        {
+            ((IMixer*)*i)->Lock();
+            ((IMixer*)*i)->AudioOut(outl, outr);
+            ((IMixer*)*i)->UnLock();
         }
-        stales = frameSize;
+        addSmps(outl, outr);
     }
+    stales = frameSize;
+
     return priBuf;
 }
 

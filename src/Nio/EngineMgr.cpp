@@ -19,9 +19,7 @@
 #if PORTAUDIO
 #include "PaEngine.h"
 #endif
-#if RTMIDI
 #include "RtEngine.h"
-#endif
 
 using namespace std;
 
@@ -54,10 +52,8 @@ EngineMgr::EngineMgr()
     std::cout << "Adding Portaudio engine" << std::endl;
     engines.push_back(new PaEngine());
 #endif
-#if RTMIDI
     std::cout << "Adding RtMidi engine" << std::endl;
     engines.push_back(new RtEngine());
-#endif
 
     defaultOut = dynamic_cast<AudioOut *>(defaultEng);
 

@@ -2,6 +2,7 @@
 #define INMGR_H
 
 #include <string>
+#include <set>
 #include <semaphore.h>
 #include "SafeQueue.h"
 #include "../Nio/IMixer.h"
@@ -37,8 +38,8 @@ class InMgr
         bool SetSource(std::string name);
         std::string GetSource() const;
 
-        void SetMixer(IMixer* mixer) { this->mixer = mixer; }
-        IMixer* GetMixer() { return this->mixer; }
+        void AddMixer(IMixer* mixer);
+        void RemoveMixer(IMixer* mixer);
 
         friend class EngineMgr;
     private:
@@ -49,7 +50,7 @@ class InMgr
         class MidiIn * current;
 
         /**the link to the rest of zyn*/
-        IMixer *mixer;
+        std::set<IMixer*> mixers;
 };
 
 #endif

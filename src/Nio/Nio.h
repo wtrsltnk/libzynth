@@ -17,6 +17,9 @@ namespace Nio
     bool Start(IMixer* mixer, Settings* settings);
     void Stop();
 
+    void AddMixer(IMixer* mixer);
+    void RemoveMixer(IMixer* mixer);
+
     void SetDefaultSource(std::string name);
     void SetDefaultSink(std::string name);
 

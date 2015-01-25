@@ -3,7 +3,7 @@
 
 #include "../Misc/Stereo.h"
 #include "../Nio/IMixer.h"
-#include <list>
+#include <set>
 #include <string>
 #include <semaphore.h>
 
@@ -38,8 +38,8 @@ class OutMgr
         bool setSink(std::string name);
         std::string getSink() const;
 
-        void SetMixer(IMixer* mixer) { this->mixer = mixer; }
-        IMixer* GetMixer() { return this->mixer; }
+        void AddMixer(IMixer* mixer);
+        void RemoveMixer(IMixer* mixer);
 
         class WavEngine * wave;     /**<The Wave Recorder*/
         friend class EngineMgr;
@@ -59,7 +59,7 @@ class OutMgr
 
         float *outl;
         float *outr;
-        IMixer *mixer;
+        std::set<IMixer*> mixers;
 
         int stales;
 };

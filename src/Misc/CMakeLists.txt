@@ -7,5 +7,6 @@ set(libzynth_misc_SRCS
     Misc/XMLwrapper.cpp
     Misc/WavFile.cpp
     Misc/WaveShapeSmps.cpp
+    Misc/Master.cpp
     PARENT_SCOPE
     )

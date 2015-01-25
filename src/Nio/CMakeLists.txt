@@ -9,7 +9,7 @@ set(libzynth_nio_SRCS
     Nio/Engine.cpp
     Nio/EngineMgr.cpp
     Nio/Nio.cpp
-#    Nio/RtEngine.cpp
-#    Nio/RtMidi.cpp
+    Nio/RtEngine.cpp
+    Nio/RtMidi.cpp
     PARENT_SCOPE
     )

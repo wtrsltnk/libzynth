@@ -5,24 +5,24 @@
 
 using namespace std;
 
-ostream &operator<<(ostream &out, const MidiEvent &ev)
+ostream& operator << (ostream& out, const MidiEvent& ev)
 {
     switch(ev.type) {
         case M_NOTE:
             out << "MidiNote: note(" << ev.num << ")\n"
-            << "          channel(" << ev.channel << ")\n"
-            << "          velocity(" << ev.value << ")";
+                << "          channel(" << ev.channel << ")\n"
+                << "          velocity(" << ev.value << ")";
             break;
 
         case M_CONTROLLER:
             out << "MidiCtl: controller(" << ev.num << ")\n"
-            << "         channel(" << ev.channel << ")\n"
-            << "         value(" << ev.value << ")";
+                << "         channel(" << ev.channel << ")\n"
+                << "         value(" << ev.value << ")";
             break;
 
         case M_PGMCHANGE:
             out << "PgmChange: program(" << ev.num << ")\n"
-            << "           channel(" << ev.channel << ")";
+                << "           channel(" << ev.channel << ")";
             break;
     }
 
@@ -40,7 +40,7 @@ InMgr &InMgr::getInstance()
 }
 
 InMgr::InMgr()
-    :queue(100), mixer(NULL)
+    :queue(100)
 {
     current = NULL;
     sem_init(&work, PTHREAD_PROCESS_PRIVATE, 0);
@@ -50,6 +50,16 @@ InMgr::~InMgr()
 {
     //lets stop the consumer thread
     sem_destroy(&work);
+}
+
+void InMgr::AddMixer(IMixer* mixer)
+{
+    this->mixers.insert(mixer);
+}
+
+void InMgr::RemoveMixer(IMixer* mixer)
+{
+    this->mixers.erase(mixer);
 }
 
 void InMgr::putEvent(MidiEvent ev)
@@ -63,28 +73,34 @@ void InMgr::putEvent(MidiEvent ev)
 void InMgr::flush()
 {
     MidiEvent ev;
-    while(!sem_trywait(&work)) {
+    while(!sem_trywait(&work))
+    {
         queue.pop(ev);
         //cout << ev << endl;
 
-        switch(ev.type) {
-            case M_NOTE:
-                if(ev.value)
-                    this->mixer->NoteOn(ev.channel, ev.num, ev.value);
-                else
-                    this->mixer->NoteOff(ev.channel, ev.num);
-                break;
+        for (std::set<IMixer*>::iterator i = this->mixers.begin(); i != this->mixers.end(); ++i)
+        {
+            ((IMixer*)*i)->Lock();
+            switch(ev.type) {
+                case M_NOTE:
+                    if(ev.value)
+                        ((IMixer*)*i)->NoteOn(ev.channel, ev.num, ev.value);
+                    else
+                        ((IMixer*)*i)->NoteOff(ev.channel, ev.num);
+                    break;
 
-            case M_CONTROLLER:
-                this->mixer->SetController(ev.channel, ev.num, ev.value);
-                break;
+                case M_CONTROLLER:
+                    ((IMixer*)*i)->SetController(ev.channel, ev.num, ev.value);
+                    break;
 
-            case M_PGMCHANGE:
-                this->mixer->SetProgram(ev.channel, ev.num);
-                break;
-            case M_PRESSURE:
-                this->mixer->PolyphonicAftertouch(ev.channel, ev.num, ev.value);
-                break;
+                case M_PGMCHANGE:
+                    ((IMixer*)*i)->SetProgram(ev.channel, ev.num);
+                    break;
+                case M_PRESSURE:
+                    ((IMixer*)*i)->PolyphonicAftertouch(ev.channel, ev.num, ev.value);
+                    break;
+            }
+            ((IMixer*)*i)->UnLock();
         }
     }
 }

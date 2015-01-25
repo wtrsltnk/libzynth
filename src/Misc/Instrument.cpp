@@ -37,7 +37,7 @@
 
 Instrument::Instrument(Microtonal *microtonal_, FFTwrapper *fft_, pthread_mutex_t *mutex_)
 {
-//    microtonal = microtonal_;
+    microtonal = microtonal_;
     fft      = fft_;
     mutex    = mutex_;
     pthread_mutex_init(&load_mutex, NULL);

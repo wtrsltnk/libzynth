@@ -30,8 +30,8 @@ bool Nio::Start(IMixer* mixer, Settings *s)
     out = &OutMgr::getInstance(); //Initialize the Output Systems
     eng = &EngineMgr::getInstance(); //Initialize The Engines
 
-    in->SetMixer(mixer);
-    out->SetMixer(mixer);
+    in->AddMixer(mixer);
+    out->AddMixer(mixer);
 
     return eng->start();
 }
@@ -39,6 +39,18 @@ bool Nio::Start(IMixer* mixer, Settings *s)
 void Nio::Stop()
 {
     eng->stop();
+}
+
+void Nio::AddMixer(IMixer* mixer)
+{
+    in->AddMixer(mixer);
+    out->AddMixer(mixer);
+}
+
+void Nio::RemoveMixer(IMixer* mixer)
+{
+    in->RemoveMixer(mixer);
+    out->RemoveMixer(mixer);
 }
 
 void Nio::SetDefaultSource(string name)
