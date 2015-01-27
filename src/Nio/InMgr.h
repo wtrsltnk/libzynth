@@ -41,6 +41,7 @@ class InMgr
         void AddMixer(IMixer* mixer);
         void RemoveMixer(IMixer* mixer);
 
+        class MidiIn * GetCurrent() { return this->current; }
         friend class EngineMgr;
     private:
         InMgr();

@@ -38,6 +38,9 @@ bool RtEngine::Start()
     this->midiin = new RtMidiIn();
     if (this->midiin->getPortCount() > 0)
     {
+        for (int i  = 0; i < this->midiin->getPortCount(); i++)
+            this->ports.push_back(this->midiin->getPortName(i));
+
         this->midiin->setCallback(RtEngine::callback, this);
         this->midiin->openPort(0);
         return true;
@@ -67,6 +70,20 @@ void RtEngine::setMidiEn(bool nval)
 bool RtEngine::getMidiEn() const
 {
     return (this->midiin != 0);
+}
+
+const std::vector<std::string> RtEngine::GetPorts() const
+{
+    return this->ports;
+}
+
+void RtEngine::SetPort(int port)
+{
+    if (this->midiin != 0 && port >= 0 && port < this->ports.size())
+    {
+        this->midiin->closePort();
+        this->midiin->openPort(port);
+    }
 }
 
 void RtEngine::callback(double timeStamp, std::vector<unsigned char> *message, void *userData)

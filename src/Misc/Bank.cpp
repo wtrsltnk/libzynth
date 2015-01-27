@@ -45,7 +45,7 @@
 #include "Util.h"
 #include "Instrument.h"
 
-#define INSTRUMENT_EXTENSION ".xml"
+#define INSTRUMENT_EXTENSION ".xiz"
 
 //if this file exists into a directory, this make the directory to be considered as a bank, even if it not contains a instrument file
 #define FORCE_BANK_DIR_FILE ".bankdir"

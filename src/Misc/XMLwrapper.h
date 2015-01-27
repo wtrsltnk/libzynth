@@ -220,6 +220,7 @@ class XMLwrapper
          * @param xmldata String to be saved
          */
         int dosavefile(const std::string& filename,
+                       int compression,
                        const char *xmldata) const;
 
         /**

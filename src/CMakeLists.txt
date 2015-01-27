@@ -5,17 +5,20 @@ message(STATUS "Building on a '${CMAKE_SYSTEM_NAME} v${CMAKE_SYSTEM_VERSION}' Sy
 find_package(FFTW REQUIRED)
 find_package(MXML REQUIRED)
 find_package(PTHREAD REQUIRED)
+find_package(ZLIB REQUIRED)
 
 link_directories(
     ${FFTW_LIBRARY_DIRS}
     ${MXML_LIBRARY_DIRS}
     ${PTHREAD_LIBRARY_DIRS}
+    ${ZLIB_LIBRARY_DIRS}
     )
 
 include_directories(
     ${FFTW_INCLUDE_DIR}
     ${MXML_INCLUDE_DIR}
     ${PTHREAD_INCLUDE_DIR}
+    ${ZLIB_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     )
@@ -165,6 +168,7 @@ target_link_libraries(libzynth
     ${FFTW_LIBRARIES}
     ${MXML_LIBRARIES}
     ${PTHREAD_LIBRARIES}
+    ${ZLIB_LIBRARIES}
     ${OS_LIBRARIES}
     )
 

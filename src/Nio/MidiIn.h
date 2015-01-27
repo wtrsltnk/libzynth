@@ -26,6 +26,8 @@
 #define MIDI_IN_H
 
 #include "Engine.h"
+#include <vector>
+#include <string>
 
 /**This class is inherited by all the Midi input classes*/
 class MidiIn:public virtual Engine
@@ -38,6 +40,8 @@ class MidiIn:public virtual Engine
         static void midiProcess(unsigned char head,
                                 unsigned char num,
                                 unsigned char value);
+        virtual const std::vector<std::string> GetPorts() const = 0;
+        virtual void SetPort(int port) = 0;
 };
 
 #endif

@@ -29,6 +29,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <zlib.h>
 
 #include "../globals.h"
 #include "Util.h"
@@ -192,9 +193,10 @@ int XMLwrapper::saveXMLfile(const string &filename) const
     if(xmldata == NULL)
         return -2;
 
-    int result      = dosavefile(filename.c_str(), xmldata);
+    int compression = config.cfg.GzipCompression;
+    int result      = dosavefile(filename.c_str(), compression, xmldata);
 
-    free(xmldata);
+//    free(xmldata);    // Not sure if the save alloc string from mxml needs to be freed
     return result;
 }
 
@@ -209,13 +211,31 @@ char *XMLwrapper::getXMLdata() const
 
 
 int XMLwrapper::dosavefile(const std::string& filename,
+                           int compression,
                            const char *xmldata) const
 {
-    ofstream file(filename.c_str());
-    if (file .is_open())
-    {
-        file << xmldata;
-        file.close();
+    if(compression == 0) {
+        ofstream file(filename.c_str());
+        if (file .is_open())
+        {
+            file << xmldata;
+            file.close();
+        }
+    }
+    else {
+        if(compression > 9)
+            compression = 9;
+        if(compression < 1)
+            compression = 1;
+        char options[10];
+        snprintf(options, 10, "wb%d", compression);
+
+        gzFile gzfile;
+        gzfile = gzopen(filename.c_str(), options);
+        if(gzfile == NULL)
+            return -1;
+        gzputs(gzfile, xmldata);
+        gzclose(gzfile);
     }
 
     return 0;
@@ -329,15 +349,39 @@ int XMLwrapper::loadXMLfile(const string &filename)
 char *XMLwrapper::doloadfile(const string &filename) const
 {
     char  *xmldata = NULL;
-    std::ifstream file(filename.c_str(), ios::in | ios::ate);
-    if (file.is_open())
-    {
-        int size = int(file.tellg());
-        xmldata = new char[size + 1];
-        memset(xmldata, 0, size + 1);
-        file.seekg (0, ios::beg);
-        file.read (xmldata, size);
-        file.close();
+//    std::ifstream file(filename.c_str(), ios::in | ios::ate);
+//    if (file.is_open())
+//    {
+//        int size = int(file.tellg());
+//        xmldata = new char[size + 1];
+//        memset(xmldata, 0, size + 1);
+//        file.seekg (0, ios::beg);
+//        file.read (xmldata, size);
+//        file.close();
+//    }
+
+    gzFile gzfile  = gzopen(filename.c_str(), "rb");
+
+    if(gzfile != NULL) { //The possibly compressed file opened
+        stringstream strBuf;             //reading stream
+        const int    bufSize = 500;      //fetch size
+        char fetchBuf[bufSize + 1];      //fetch buffer
+        int  read = 0;                   //chars read in last fetch
+
+        fetchBuf[bufSize] = 0; //force null termination
+
+        while(bufSize == (read = gzread(gzfile, fetchBuf, bufSize)))
+            strBuf << fetchBuf;
+
+        fetchBuf[read] = 0; //Truncate last partial read
+        strBuf << fetchBuf;
+
+        gzclose(gzfile);
+
+        //Place data in output format
+        string tmp = strBuf.str();
+        xmldata = new char[tmp.size() + 1];
+        strncpy(xmldata, tmp.c_str(), tmp.size() + 1);
     }
 
     return xmldata;

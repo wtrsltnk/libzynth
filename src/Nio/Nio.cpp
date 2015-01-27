@@ -23,15 +23,12 @@ string Nio::defaultSink   = OUT_DEFAULT;
 
 Settings *synth;
 
-bool Nio::Start(IMixer* mixer, Settings *s)
+bool Nio::Start(Settings *s)
 {
     synth = s;
     in  = &InMgr::getInstance(); //Enable input wrapper
     out = &OutMgr::getInstance(); //Initialize the Output Systems
     eng = &EngineMgr::getInstance(); //Initialize The Engines
-
-    in->AddMixer(mixer);
-    out->AddMixer(mixer);
 
     return eng->start();
 }

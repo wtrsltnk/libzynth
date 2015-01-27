@@ -14,7 +14,7 @@ class WavFile;
  * Should be only externally included header */
 namespace Nio
 {
-    bool Start(IMixer* mixer, Settings* settings);
+    bool Start(Settings* settings);
     void Stop();
 
     void AddMixer(IMixer* mixer);

@@ -37,6 +37,7 @@ class Config
         ~Config();
         struct {
             int   SampleRate, SoundBufferSize, OscilSize, SwapStereo;
+            int   GzipCompression;
             int   Interpolation;
             std::string bankRootDirList[MAX_BANK_ROOT_DIRS], currentBankDir;
             std::string presetsDirList[MAX_BANK_ROOT_DIRS];

@@ -48,6 +48,8 @@ class NulEngine:public AudioOut, MidiIn
         void setMidiEn(bool) {}
         bool getMidiEn() const {return true; }
 
+        virtual const std::vector<std::string> GetPorts() const { return std::vector<std::string>(); }
+        virtual void SetPort(int port) { }
     protected:
         void *AudioThread();
         static void *_AudioThread(void *arg);

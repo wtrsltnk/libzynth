@@ -37,9 +37,13 @@ public:
     virtual void setMidiEn(bool nval);
     virtual bool getMidiEn() const;
 
+    virtual const std::vector<std::string> GetPorts() const;
+    virtual void SetPort(int port);
+
     static void callback(double timeStamp, std::vector<unsigned char> *message, void *userData);
 private:
     RtMidiIn* midiin;
+    std::vector<std::string> ports;
 };
 
 #endif // RTENGINE_H
