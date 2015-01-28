@@ -57,6 +57,7 @@ class Bank
         void swapslot(unsigned int n1, unsigned int n2);
 
         int loadbank(std::string bankdirname);
+        int loadedbank();
         int newbank(std::string newbankdirname);
 
         std::string bankfiletitle; //this is shown on the UI of the bank (the title of the window)

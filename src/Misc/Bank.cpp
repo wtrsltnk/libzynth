@@ -239,6 +239,17 @@ int Bank::loadbank(string bankdirname)
     return 0;
 }
 
+int Bank::loadedbank()
+{
+    int index = 0;
+
+    for (std::vector<bankstruct>::iterator i = this->banks.begin(); i != this->banks.end(); ++i, index++)
+        if ((*i).dir == this->dirname)
+            return index;
+
+    return index;
+}
+
 /*
  * Makes a new bank, put it on a file and makes it current bank
  */
