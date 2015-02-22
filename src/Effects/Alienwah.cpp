@@ -168,7 +168,7 @@ void Alienwah::setpreset(unsigned char npreset)
     for(int n = 0; n < PRESET_SIZE; ++n)
         changepar(n, presets[npreset][n]);
     if(insertion == 0)
-        changepar(0, presets[npreset][0] / 2);  //lower the volume if this is system effect
+        changepar(0, presets[npreset][AlienwahParameters::Volume] / 2);  //lower the volume if this is system effect
     Ppreset = npreset;
 }
 
@@ -176,41 +176,41 @@ void Alienwah::setpreset(unsigned char npreset)
 void Alienwah::changepar(int npar, unsigned char value)
 {
     switch(npar) {
-        case 0:
+        case AlienwahParameters::Volume:
             setvolume(value);
             break;
-        case 1:
+        case AlienwahParameters::Panning:
             setpanning(value);
             break;
-        case 2:
+        case AlienwahParameters::LFOFrequency:
             lfo.Pfreq = value;
             lfo.updateparams();
             break;
-        case 3:
+        case AlienwahParameters::LFORandomness:
             lfo.Prandomness = value;
             lfo.updateparams();
             break;
-        case 4:
+        case AlienwahParameters::LFOType:
             lfo.PLFOtype = value;
             lfo.updateparams();
             break;
-        case 5:
+        case AlienwahParameters::LFOStereo:
             lfo.Pstereo = value;
             lfo.updateparams();
             break;
-        case 6:
+        case AlienwahParameters::Depth:
             setdepth(value);
             break;
-        case 7:
+        case AlienwahParameters::Feedback:
             setfb(value);
             break;
-        case 8:
+        case AlienwahParameters::Delay:
             setdelay(value);
             break;
-        case 9:
+        case AlienwahParameters::LRCrossover:
             setlrcross(value);
             break;
-        case 10:
+        case AlienwahParameters::Phase:
             setphase(value);
             break;
     }
@@ -219,17 +219,17 @@ void Alienwah::changepar(int npar, unsigned char value)
 unsigned char Alienwah::getpar(int npar) const
 {
     switch(npar) {
-        case 0:  return Pvolume;
-        case 1:  return Ppanning;
-        case 2:  return lfo.Pfreq;
-        case 3:  return lfo.Prandomness;
-        case 4:  return lfo.PLFOtype;
-        case 5:  return lfo.Pstereo;
-        case 6:  return Pdepth;
-        case 7:  return Pfb;
-        case 8:  return Pdelay;
-        case 9:  return Plrcross;
-        case 10: return Pphase;
+        case AlienwahParameters::Volume:  return Pvolume;
+        case AlienwahParameters::Panning:  return Ppanning;
+        case AlienwahParameters::LFOFrequency:  return lfo.Pfreq;
+        case AlienwahParameters::LFORandomness:  return lfo.Prandomness;
+        case AlienwahParameters::LFOType:  return lfo.PLFOtype;
+        case AlienwahParameters::LFOStereo:  return lfo.Pstereo;
+        case AlienwahParameters::Depth:  return Pdepth;
+        case AlienwahParameters::Feedback:  return Pfb;
+        case AlienwahParameters::Delay:  return Pdelay;
+        case AlienwahParameters::LRCrossover:  return Plrcross;
+        case AlienwahParameters::Phase: return Pphase;
         default: return 0;
     }
 }

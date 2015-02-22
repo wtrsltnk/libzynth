@@ -184,7 +184,7 @@ void Echo::setpreset(unsigned char npreset)
     for(int n = 0; n < PRESET_SIZE; ++n)
         changepar(n, presets[npreset][n]);
     if(insertion)
-        setvolume(presets[npreset][0] / 2);  //lower the volume if this is insertion effect
+        setvolume(presets[npreset][EchoParameters::Volume] / 2);  //lower the volume if this is insertion effect
     Ppreset = npreset;
 }
 
@@ -192,25 +192,25 @@ void Echo::setpreset(unsigned char npreset)
 void Echo::changepar(int npar, unsigned char value)
 {
     switch(npar) {
-        case 0:
+        case EchoParameters::Volume:
             setvolume(value);
             break;
-        case 1:
+        case EchoParameters::Panning:
             setpanning(value);
             break;
-        case 2:
+        case EchoParameters::Delay:
             setdelay(value);
             break;
-        case 3:
+        case EchoParameters::LRDelay:
             setlrdelay(value);
             break;
-        case 4:
+        case EchoParameters::LRCrossover:
             setlrcross(value);
             break;
-        case 5:
+        case EchoParameters::Feedback:
             setfb(value);
             break;
-        case 6:
+        case EchoParameters::Dampening:
             sethidamp(value);
             break;
     }
@@ -219,13 +219,13 @@ void Echo::changepar(int npar, unsigned char value)
 unsigned char Echo::getpar(int npar) const
 {
     switch(npar) {
-        case 0:  return Pvolume;
-        case 1:  return Ppanning;
-        case 2:  return Pdelay;
-        case 3:  return Plrdelay;
-        case 4:  return Plrcross;
-        case 5:  return Pfb;
-        case 6:  return Phidamp;
-        default: return 0; // in case of bogus parameter number
+        case EchoParameters::Volume:  return Pvolume;
+        case EchoParameters::Panning:  return Ppanning;
+        case EchoParameters::Delay:  return Pdelay;
+        case EchoParameters::LRDelay:  return Plrdelay;
+        case EchoParameters::LRCrossover:  return Plrcross;
+        case EchoParameters::Feedback:  return Pfb;
+        case EchoParameters::Dampening:  return Phidamp;
+        default: return EchoParameters::Volume; // in case of bogus parameter number
     }
 }

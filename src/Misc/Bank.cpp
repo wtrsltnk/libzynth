@@ -331,9 +331,9 @@ void Bank::rescanforbanks()
     //remove old banks
     banks.clear();
 
-    for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-        if(!config.cfg.bankRootDirList[i].empty())
-            scanrootdir(config.cfg.bankRootDirList[i]);
+    std::vector<std::string>::iterator itr = config.cfg.bankRootDirList.begin();
+    for(; itr != config.cfg.bankRootDirList.end(); ++itr)
+        scanrootdir(*itr);
 
     //sort the banks
     sort(banks.begin(), banks.end());

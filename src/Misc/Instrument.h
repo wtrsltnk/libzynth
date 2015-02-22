@@ -65,6 +65,8 @@ class Instrument
         void RelaseSustainedKeys(); //this is called when the sustain pedal is relased
         void RelaseAllKeys(); //this is called on AllNotesOff controller
 
+        bool HasNotesPlaying();
+
         /* The synthesizer part output */
         void ComputePartSmps(); //Part output
 

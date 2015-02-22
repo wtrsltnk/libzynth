@@ -31,6 +31,24 @@ using namespace std;
 
 #define MAX_ALIENWAH_DELAY 100
 
+namespace AlienwahParameters
+{
+enum
+{
+    Volume = 0,
+    Panning = 1,
+    LFOFrequency = 2,
+    LFORandomness = 3,
+    LFOType = 4,
+    LFOStereo = 5,
+    Depth = 6,
+    Feedback = 7,
+    Delay = 8,
+    LRCrossover = 9,
+    Phase = 10
+};
+}
+
 /**"AlienWah" Effect*/
 class Alienwah:public Effect
 {

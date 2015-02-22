@@ -24,6 +24,7 @@
 #define CONFIG_H
 #include "../globals.h"
 #include <string>
+#include <vector>
 #define MAX_STRING_SIZE 4000
 #define MAX_BANK_ROOT_DIRS 100
 
@@ -39,8 +40,9 @@ class Config
             int   SampleRate, SoundBufferSize, OscilSize, SwapStereo;
             int   GzipCompression;
             int   Interpolation;
-            std::string bankRootDirList[MAX_BANK_ROOT_DIRS], currentBankDir;
-            std::string presetsDirList[MAX_BANK_ROOT_DIRS];
+            std::string currentBankDir;
+            std::vector<std::string> bankRootDirList;
+            std::vector<std::string> presetsDirList;
             int CheckPADsynth;
         } cfg;
 

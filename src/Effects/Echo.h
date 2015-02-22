@@ -26,6 +26,20 @@
 #include "Effect.h"
 #include "../Misc/Stereo.h"
 
+namespace EchoParameters
+{
+enum
+{
+    Volume = 0,
+    Panning = 1,
+    Delay = 2,
+    LRDelay = 3,
+    LRCrossover = 4,
+    Feedback = 5,
+    Dampening = 6
+};
+}
+
 /**Echo Effect*/
 class Echo:public Effect
 {

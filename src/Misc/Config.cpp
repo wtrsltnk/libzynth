@@ -50,23 +50,23 @@ void Config::Init()
 
     this->ReadConfig(this->GetConfigFileName());
 
-    if(cfg.bankRootDirList[0].empty()) {
+    if(cfg.bankRootDirList.empty()) {
         //banks
-        cfg.bankRootDirList[0] = "~/banks";
-        cfg.bankRootDirList[1] = "./";
-        cfg.bankRootDirList[2] = "/usr/share/zynaddsubfx/banks";
-        cfg.bankRootDirList[3] = "/usr/local/share/zynaddsubfx/banks";
-        cfg.bankRootDirList[4] = "../banks";
-        cfg.bankRootDirList[5] = "banks";
+        cfg.bankRootDirList.push_back("~/banks");
+        cfg.bankRootDirList.push_back("./");
+        cfg.bankRootDirList.push_back("/usr/share/zynaddsubfx/banks");
+        cfg.bankRootDirList.push_back("/usr/local/share/zynaddsubfx/banks");
+        cfg.bankRootDirList.push_back("../banks");
+        cfg.bankRootDirList.push_back("banks");
     }
 
-    if(cfg.presetsDirList[0].empty()) {
+    if(cfg.presetsDirList.empty()) {
         //presets
-        cfg.presetsDirList[0] = "./";
-        cfg.presetsDirList[1] = "../presets";
-        cfg.presetsDirList[2] = "presets";
-        cfg.presetsDirList[3] = "/usr/share/zynaddsubfx/presets";
-        cfg.presetsDirList[4] = "/usr/local/share/zynaddsubfx/presets";
+        cfg.presetsDirList.push_back("./");
+        cfg.presetsDirList.push_back("../presets");
+        cfg.presetsDirList.push_back("presets");
+        cfg.presetsDirList.push_back("/usr/share/zynaddsubfx/presets");
+        cfg.presetsDirList.push_back("/usr/local/share/zynaddsubfx/presets");
     }
 }
 
@@ -81,14 +81,12 @@ void Config::Save()
 
 void Config::ClearBankRootDirList()
 {
-    for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-        cfg.bankRootDirList[i].clear();
+    cfg.bankRootDirList.clear();
 }
 
 void Config::ClearPresetsDirList()
 {
-    for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-        cfg.presetsDirList[i].clear();
+    cfg.presetsDirList.clear();
 }
 
 void Config::ReadConfig(const std::string& filename)
@@ -127,16 +125,16 @@ void Config::ReadConfig(const std::string& filename)
                                           1);
 
         //get bankroot dirs
-        for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-            if(xmlcfg.enterbranch("BANKROOT", i)) {
-                cfg.bankRootDirList[i] = xmlcfg.getparstr("bank_root", "");
+        int i = 0;
+        while (xmlcfg.enterbranch("BANKROOT", i++)) {
+                cfg.bankRootDirList.push_back(xmlcfg.getparstr("bank_root", ""));
                 xmlcfg.exitbranch();
             }
 
         //get preset root dirs
-        for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-            if(xmlcfg.enterbranch("PRESETSROOT", i)) {
-                cfg.presetsDirList[i] = xmlcfg.getparstr("presets_root", "");
+        i = 0;
+        while (xmlcfg.enterbranch("PRESETSROOT", i++)) {
+                cfg.presetsDirList.push_back(xmlcfg.getparstr("presets_root", ""));
                 xmlcfg.exitbranch();
             }
 
@@ -162,19 +160,17 @@ void Config::SaveConfig(const std::string& filename)
     xmlcfg->addparstr("bank_current", cfg.currentBankDir);
 
 
-    for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-        if(!cfg.bankRootDirList[i].empty()) {
-            xmlcfg->beginbranch("BANKROOT", i);
-            xmlcfg->addparstr("bank_root", cfg.bankRootDirList[i]);
-            xmlcfg->endbranch();
-        }
+    for(unsigned int i = 0; i < cfg.bankRootDirList.size(); ++i) {
+        xmlcfg->beginbranch("BANKROOT", i);
+        xmlcfg->addparstr("bank_root", cfg.bankRootDirList[i]);
+        xmlcfg->endbranch();
+    }
 
-    for(int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
-        if(!cfg.presetsDirList[i].empty()) {
-            xmlcfg->beginbranch("PRESETSROOT", i);
-            xmlcfg->addparstr("presets_root", cfg.presetsDirList[i]);
-            xmlcfg->endbranch();
-        }
+    for(unsigned int i = 0; i < cfg.presetsDirList.size(); ++i) {
+        xmlcfg->beginbranch("PRESETSROOT", i);
+        xmlcfg->addparstr("presets_root", cfg.presetsDirList[i]);
+        xmlcfg->endbranch();
+    }
 
     xmlcfg->addpar("interpolation", cfg.Interpolation);
 
@@ -190,8 +186,8 @@ std::string Config::GetConfigFileName()
 #ifdef WIN32
     char win[256] = { 0 };
     _getcwd(win, 256);
-    return std::string(win) + std::string("/.zynaddsubfxXML.cfg");
+    return std::string(win) + std::string("/.libzynth.cfg");
 #else
-    return std::string(getenv("HOME")) + std::string("/.zynaddsubfxXML.cfg");
+    return std::string(getenv("HOME")) + std::string("/.libzynth.cfg");
 #endif
 }

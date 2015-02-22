@@ -807,6 +807,15 @@ void Instrument::RelaseAllKeys()
             RelaseNotePos(i);
 }
 
+bool Instrument::HasNotesPlaying()
+{
+    for (int i = 0; i < POLIPHONY; i++)
+        if (this->partnote[i].status != KEY_OFF)
+            return true;
+
+    return false;
+}
+
 // Call NoteOn(...) with the most recent still held key as new note
 // (Made for Mono/Legato).
 void Instrument::MonoMemRenote()

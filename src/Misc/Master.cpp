@@ -49,13 +49,17 @@ vuData::vuData(void)
 static Master* masterInstance = NULL;
 
 Master::Master()
-    : engineManager(EngineMgr:: getInstance())
+    : engineManager(EngineMgr::getInstance())
 {
     pthread_mutex_init(&mutex, NULL);
     pthread_mutex_init(&vumutex, NULL);
     fft = new FFTwrapper(synth->oscilsize);
 
     shutup = 0;
+
+    //System Effects init
+    for(int nefx = 0; nefx < NUM_SYS_EFX; ++nefx)
+        sysefx[nefx] = new EffectMgr(0, &mutex);
 
     defaults();
 }
@@ -82,6 +86,11 @@ void Master::defaults()
     setPkeyshift(64);
 
     this->addInstrument();
+
+    //System Effects init
+    for(int nefx = 0; nefx < NUM_SYS_EFX; ++nefx) {
+        sysefx[nefx]->defaults();
+    }
 
     microtonal.defaults();
     ShutUp();
@@ -286,6 +295,48 @@ void Master::AudioOut(float *outl, float *outr)
                 (*i)->partoutl[j] *= newvol.l;
                 (*i)->partoutr[j] *= newvol.r;
             }
+    }
+
+
+    //System effects
+    for(int nefx = 0; nefx < NUM_SYS_EFX; ++nefx) {
+        if(sysefx[nefx]->geteffect() == 0)
+            continue;  //the effect is disabled
+
+        float *tmpmixl = getTmpBuffer();
+        float *tmpmixr = getTmpBuffer();
+        //Clean up the samples used by the system effects
+        memset(tmpmixl, 0, synth->bufferbytes);
+        memset(tmpmixr, 0, synth->bufferbytes);
+
+        //Mix the channels according to the part settings about System Effect
+        for(std::vector<Instrument*>::iterator i = this->instruments.begin(); i != this->instruments.end(); ++i)
+        {
+            Instrument* instrument = (*i);
+
+            //skip if the part is disabled
+            if(instrument->Penabled == 0)
+                continue;
+
+            //the output volume of each part to system effect
+            const float vol = 1.0f;//sysefxvol[nefx][npart];
+            for(int i = 0; i < synth->buffersize; ++i) {
+                tmpmixl[i] += instrument->partoutl[i] * vol;
+                tmpmixr[i] += instrument->partoutr[i] * vol;
+            }
+        }
+
+        sysefx[nefx]->out(tmpmixl, tmpmixr);
+
+        //Add the System Effect to sound output
+        const float outvol = sysefx[nefx]->sysefxgetvolume();
+        for(int i = 0; i < synth->buffersize; ++i) {
+            outl[i] += tmpmixl[i] * outvol;
+            outr[i] += tmpmixr[i] * outvol;
+        }
+
+        returnTmpBuffer(tmpmixl);
+        returnTmpBuffer(tmpmixr);
     }
 
 

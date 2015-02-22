@@ -30,6 +30,7 @@
 
 #include "Bank.h"
 #include "XMLwrapper.h"
+#include "Instrument.h"
 
 #include "../Params/Controller.h"
 #include "../Nio/IMixer.h"
@@ -95,6 +96,10 @@ public:
     //parameters control
     void setPvolume(char Pvolume_);
     void setPkeyshift(char Pkeyshift_);
+
+    //effects
+    class EffectMgr * sysefx[NUM_SYS_EFX]; //system
+    class EffectMgr * insefx[NUM_INS_EFX]; //insertion
 
     //peaks for VU-meter
     void vuresetpeaks();
